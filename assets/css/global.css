@@ -1,0 +1,18 @@
+/* Makes the password field and toggle button display inline */
+.password-control {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Add padding to the right side of the password field to make room for the toggle button */
+.password-control input {
+    padding-right: 35px !important;
+}
+
+/* Positions the toggle button absolutely to the right side of the password field */
+.password-control i {
+    position: absolute !important;
+    right: 10px !important;
+    cursor: pointer !important;
+}

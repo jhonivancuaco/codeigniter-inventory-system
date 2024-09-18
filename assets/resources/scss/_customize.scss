@@ -1,0 +1,69 @@
+$nav-tabs-color: $pastel_red;
+
+.nav-tabs .nav-item .nav-link {
+    background-color: $light !important;
+    color: $nav-tabs-color !important;
+
+    &.active {
+        color: $light !important;
+        background-color: $nav-tabs-color !important;
+    }
+}
+
+.sidebar-collapse .main-sidebar .brand-text {
+    display: none !important;
+}
+
+@each $color, $value in $theme-colors {
+    [class*=sidebar-#{$color}-] {
+        background-color: $value !important;
+        color: yiq($value, $light, $dark) !important;
+
+        .brand-link,
+        .sidebar a {
+            color: #{yiq($value, $light, $dark)} !important;
+        }
+
+        .brand-link,
+        .user-panel {
+            border-bottom: 1px solid yiq($value, #dee2e6, #4b545c) !important;
+        }
+    }
+
+    @each $ch-color, $ch-value in $theme-colors {
+        .sidebar-#{$color}-#{$ch-color} {
+            .nav-sidebar>.nav-item>.nav-link.active {
+                background-color: $ch-value !important;
+                color: yiq($ch-value, $light, $dark) !important;
+            }
+
+            .nav-treeview>.nav-item>.nav-link.active {
+                background-color: $light !important;
+                color: $dark !important
+            }
+        }
+
+
+    }
+}
+
+.test-color {
+    color: yiq(#9BBEED, $light, $dark);
+}
+
+
+.dt-button-collection .dt-button {
+    color: $dark !important;
+    background: none !important;
+
+    &::before {
+        content: '\25A1';
+        color: $pastel_red !important;
+        padding-right: 6px;
+    }
+
+    &.active::before {
+        content: '\25A0';
+        color: $pastel_blue !important;
+    }
+}

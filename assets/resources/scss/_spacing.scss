@@ -1,0 +1,11 @@
+.min-vh-100 {
+    min-height: 100vh !important;
+}
+
+@for $i from 2 through 20 {
+    .gap-#{$i} {
+        gap: #{$i}px;
+    }
+    $i: $i + 2;
+}
+
