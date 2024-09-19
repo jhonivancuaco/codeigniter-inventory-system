@@ -87,12 +87,20 @@
                                 <th>Product</th>
                                 <th>Stocks</th>
                             </tr>
-                            <?php foreach ($reports['lowest_product_stocks'] as $item) : ?>
-                                <tr class="small">
-                                    <td><?php echo $item['name'] ?></td>
-                                    <td><?php echo $item['quantity'] ?></td>
+                            <?php if (!empty($reports['lowest_product_stocks'])): ?>
+                                <?php foreach ($reports['lowest_product_stocks'] as $item) : ?>
+                                    <tr class="small">
+                                        <td><?php echo $item['name'] ?></td>
+                                        <td><?php echo $item['quantity'] ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="2">
+                                        <p class="text-center">No data available</p>
+                                    </td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </table>
                     </div>
                 </div>

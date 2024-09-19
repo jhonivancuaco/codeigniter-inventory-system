@@ -107,7 +107,6 @@ class Computation_model extends CI_Model {
 
             // Add the product details to the stocks array
             $stocks[] = array(
-                'id' => $product->id,
                 'name' => $product->material,
                 'quantity' => $product_quantity
             );
@@ -123,7 +122,11 @@ class Computation_model extends CI_Model {
 
         // If only one product is requested, return it as a single item instead of an array
         if ($length == 1) {
-            $stocks = $stocks[0];
+            if (count($stocks) > 0) {
+                $stocks = $stocks[0];
+            } else {
+                $stocks = array();
+            }
         }
 
         // Return the lowest stock products
@@ -144,9 +147,15 @@ class Computation_model extends CI_Model {
 
         // Initialize the sales data array
         $top_sales_data = array();
+
+        if($orders){
         foreach ($orders as $order) {
             $top_sales_data['labels'][] = $order->product_name;
             $top_sales_data['data'][] = $order->count;
+        }}
+        else {
+            $top_sales_data['labels'] = array('No data available');
+            $top_sales_data['data'] = array(0);
         }
 
         return $top_sales_data;
@@ -165,11 +174,17 @@ class Computation_model extends CI_Model {
 
         // Initialize the monthly sales data array
         $monthly_sales_data = array();
-        foreach ($orders as $order) {
-            // Format the date and add it to the labels
-            $monthly_sales_data['labels'][] = date('D - M j ', strtotime($order->date_purchased));
-            // Add the total sales for the day
-            $monthly_sales_data['data'][] = $order->total_purchased;
+
+        if($orders){
+            foreach ($orders as $order) {
+                // Format the date and add it to the labels
+                $monthly_sales_data['labels'][] = date('D - M j', strtotime($order->date_purchased));
+                // Add the total sales for the day
+                $monthly_sales_data['data'][] = $order->total_purchased;
+            }
+        } else {
+            $monthly_sales_data['labels'] = array(date('D - M j'));
+            $monthly_sales_data['data'] = array(0);
         }
 
         return $monthly_sales_data;
@@ -221,11 +236,19 @@ class Computation_model extends CI_Model {
         ];
 
         // Format the sales and profit data for the graph
-        foreach ($sales_and_profit as $date => $data) {
-            $sales_and_profit_data['labels'][] = date('D - M j ', strtotime($date));
-            $sales_and_profit_data['total_sales'][] = $data['total_sales'];
-            $sales_and_profit_data['total_profit'][] = $data['total_profit'];
+        if (!empty($sales_and_profit)) {
+            foreach ($sales_and_profit as $date => $data) {
+                $sales_and_profit_data['labels'][] = date('D - M j', strtotime($date));
+                $sales_and_profit_data['total_sales'][] = $data['total_sales'];
+                $sales_and_profit_data['total_profit'][] = $data['total_profit'];
+            }
+        } else {
+            $sales_and_profit_data['labels'] = array(date('D - M j'));
+            $sales_and_profit_data['total_sales'] = array(0);
+            $sales_and_profit_data['total_profit'] = array(0);
         }
+
+
 
         return $sales_and_profit_data;
     }
@@ -251,6 +274,9 @@ class Computation_model extends CI_Model {
             $payment_method_data['labels'][] = $item->mode_of_payment;
             $payment_method_data['data'][] = $item->count;
         }
+
+        $payment_method_data['labels'] = array("No data available");
+        $payment_method_data['data'] = array(0);
 
         return $payment_method_data;
     }

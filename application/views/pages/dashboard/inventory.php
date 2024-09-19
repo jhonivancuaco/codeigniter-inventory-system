@@ -63,9 +63,15 @@
                 <div class="card-body d-flex flex-column align-items-center justify-content-between">
                     <i class="fas fa-boxes fa-6x"></i>
                     <span class="font-weight-bold text-center">
-                        <span class="h2"><?php echo $reports['lowest_product_stock']['name'] ?></span>
-                        <br>
-                        <?php echo $reports['lowest_product_stock']['quantity'] ?> pcs in stock
+
+                        <?php if (isset($reports['lowest_product_stock']['name'])): ?>
+                            <span class="h2"><?php echo $reports['lowest_product_stock']['name'] ?></span>
+                            <br>
+                            <?php echo $reports['lowest_product_stock']['quantity'] ?> pcs in stock
+                        <?php else: ?>
+                            <span class="h2">No Products Available</span>
+                        <?php endif; ?>
+
                     </span>
                 </div>
                 <div class="card-footer bg-pastel_red">
