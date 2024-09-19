@@ -63,7 +63,7 @@
         <div class="col-md-4">
             <div class="card">
                 <div class="card-body">
-                    <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                    <canvas id="doughnutChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
                 </div>
             </div>
         </div>
@@ -111,7 +111,7 @@
             <div class="card">
                 <div class="card-body">
                     <div class="card-body">
-                        <canvas id="doughnutChart" style="min-height: 280px; height: 280px; max-height: 280px; max-width: 100%;"></canvas>
+                        <canvas id="pieChart" style="min-height: 280px; height: 280px; max-height: 280px; max-width: 100%;"></canvas>
                     </div>
                 </div>
             </div>
@@ -224,14 +224,14 @@
             responsive: true,
             legend: {
                 display: true, // Show the default legend
-                position: 'bottom',
+                position: 'right',
                 labels: {
                     boxWidth: 20, // Adjust box width for better appearance
                 }
             },
             title: {
                 display: true, // Enable the title
-                text: 'Top Payment Methods', // The title text
+                text: 'Top Sales Products', // The title text
                 fontSize: 12, // Customize the title font size (optional)
                 padding: 10 // Add padding around the title (optional)
             }
@@ -267,21 +267,21 @@
             responsive: true,
             legend: {
                 display: true, // Show the default legend
-                position: 'right',
+                position: 'bottom',
                 labels: {
                     boxWidth: 20, // Adjust box width for better appearance
                 }
             },
             title: {
                 display: true, // Enable the title
-                text: 'Top Sales', // The title text
+                text: 'Top Payment Methods', // The title text
                 fontSize: 12, // Customize the title font size (optional)
                 padding: 10 // Add padding around the title (optional)
             }
         };
 
         new Chart(doughnutChartCanvas, {
-            type: 'pie',
+            type: 'doughnut',
             data: doughnutData,
             options: doughnutOptions
         });

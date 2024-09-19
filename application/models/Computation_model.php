@@ -148,12 +148,12 @@ class Computation_model extends CI_Model {
         // Initialize the sales data array
         $top_sales_data = array();
 
-        if($orders){
-        foreach ($orders as $order) {
-            $top_sales_data['labels'][] = $order->product_name;
-            $top_sales_data['data'][] = $order->count;
-        }}
-        else {
+        if ($orders) {
+            foreach ($orders as $order) {
+                $top_sales_data['labels'][] = $order->product_name;
+                $top_sales_data['data'][] = $order->count;
+            }
+        } else {
             $top_sales_data['labels'] = array('No data available');
             $top_sales_data['data'] = array(0);
         }
@@ -175,7 +175,7 @@ class Computation_model extends CI_Model {
         // Initialize the monthly sales data array
         $monthly_sales_data = array();
 
-        if($orders){
+        if ($orders) {
             foreach ($orders as $order) {
                 // Format the date and add it to the labels
                 $monthly_sales_data['labels'][] = date('D - M j', strtotime($order->date_purchased));
@@ -270,13 +270,15 @@ class Computation_model extends CI_Model {
         );
 
         // Store payment method names and counts
-        foreach ($payment_method as $item) {
-            $payment_method_data['labels'][] = $item->mode_of_payment;
-            $payment_method_data['data'][] = $item->count;
+        if ($payment_method) {
+            foreach ($payment_method as $item) {
+                $payment_method_data['labels'][] = $item->mode_of_payment;
+                $payment_method_data['data'][] = $item->count;
+            }
+        } else {
+            $payment_method_data['labels'] = array("No data available");
+            $payment_method_data['data'] = array(0);
         }
-
-        $payment_method_data['labels'] = array("No data available");
-        $payment_method_data['data'] = array(0);
 
         return $payment_method_data;
     }

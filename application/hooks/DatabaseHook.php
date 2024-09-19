@@ -65,8 +65,9 @@ class DatabaseHook {
 
 
         $CI->load->model('populate_model', 'populate');
-        // Uncomment the following line to populate the database with random dummy data
-        // $CI->populate->populateDatabase();
+
+        // Comment out the following line if you don't want to populate new dummy data into the database
+        $CI->populate->populateDatabase();
         
         
         // The following tables are created in the database
