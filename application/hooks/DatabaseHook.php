@@ -63,13 +63,6 @@ class DatabaseHook {
         $CI->load->database();
         $CI->load->dbforge();
 
-
-        $CI->load->model('populate_model', 'populate');
-
-        // Comment out the following line if you don't want to populate new dummy data into the database
-        $CI->populate->populateDatabase();
-        
-        
         // The following tables are created in the database
         // - users: contains user information
         // - supplier: contains supplier information
@@ -306,6 +299,12 @@ class DatabaseHook {
                 }
             }
         }
+
+
+
+        $CI->load->model('populate_model', 'populate');
+        // Comment out the following line if you don't want to populate new dummy data into the database
+        $CI->populate->populateDatabase();
     }
 
     /**
