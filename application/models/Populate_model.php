@@ -65,105 +65,117 @@ class Populate_model extends CI_Model {
 
     // Main function to populate the database with random suppliers, products, and orders
     public function populateDatabase($suppliersCount = 10, $productsCount = 100, $ordersCount = 1000) {
+
         // Truncate (clear) the tables before inserting new data
-        $this->db->truncate('orders');
-        $this->db->truncate('products');
-        $this->db->truncate('suppliers');
+        // $this->db->truncate('orders');
+        // $this->db->truncate('products');
+        // $this->db->truncate('suppliers');
 
-        // Insert suppliers
-        $supplierIds = [];
-        for ($i = 0; $i < $suppliersCount; $i++) {
-            $name = $this->randomSupplierName();
-            $address = $this->getAddress();
-            $mobile = $this->getNumber();
-            $status = 'active';
-            $date = date('Y-m-d H:i:s', mt_rand(strtotime('2024-06-01'), strtotime('2024-06-30'))); // Random date in June 2024
+        $suppliersCount = $this->db->get('suppliers')->num_rows();
+        $productsCount = $this->db->get('products')->num_rows();
+        $ordersCount = $this->db->get('orders')->num_rows();
 
-            // Prepare supplier data and insert into the database
-            $data = array(
-                'name' => $name,
-                'address' => $address,
-                'mobile' => $mobile,
-                'status' => $status,
-                'date_added' => $date
-            );
-            $this->db->insert('suppliers', $data);
-            $supplierIds[] = $this->db->insert_id(); // Save the supplier ID for future use
+        if ($suppliersCount <= 0) {
+            // Insert suppliers
+            $supplierIds = [];
+            for ($i = 0; $i < $suppliersCount; $i++) {
+                $name = $this->randomSupplierName();
+                $address = $this->getAddress();
+                $mobile = $this->getNumber();
+                $status = 'active';
+                $date = date('Y-m-d H:i:s', mt_rand(strtotime('2024-06-01'), strtotime('2024-06-30'))); // Random date in June 2024
+
+                // Prepare supplier data and insert into the database
+                $data = array(
+                    'name' => $name,
+                    'address' => $address,
+                    'mobile' => $mobile,
+                    'status' => $status,
+                    'date_added' => $date
+                );
+                $this->db->insert('suppliers', $data);
+                $supplierIds[] = $this->db->insert_id(); // Save the supplier ID for future use
+            }
         }
 
-        // Insert products
-        $productIds = [];
-        for ($i = 0; $i < $productsCount; $i++) {
-            $material = $this->randomProductMaterial();
-            $supplierId = $supplierIds[array_rand($supplierIds)]; // Randomly assign a supplier
 
-            // Ensure product's date_added is after the supplier's date_added
-            $dateAdded = date('Y-m-d H:i:s', mt_rand(strtotime('2024-07-01'), strtotime('2024-07-30'))); // Random date in July 2024
+        if ($productsCount <= 0) {
+            // Insert products
+            $productIds = [];
+            for ($i = 0; $i < $productsCount; $i++) {
+                $material = $this->randomProductMaterial();
+                $supplierId = $supplierIds[array_rand($supplierIds)]; // Randomly assign a supplier
 
-            // Random product pricing and stock data
-            $price = rand(10, 1000); // Random price between 10 and 1000
-            $additional_price = rand(50, 100); // Random additional price
-            $additional_price = $additional_price > $price ? $price / 2 : $additional_price; // Ensure additional price does not exceed base price
-            $quantity = rand(100, 1000); // Random quantity between 100 and 1000
+                // Ensure product's date_added is after the supplier's date_added
+                $dateAdded = date('Y-m-d H:i:s', mt_rand(strtotime('2024-07-01'), strtotime('2024-07-30'))); // Random date in July 2024
 
-            // Prepare product data and insert into the database
-            $data = array(
-                'material' => $material,
-                'supplier_id' => $supplierId,
-                'price' => $price,
-                'additional_price' => $additional_price,
-                'quantity' => $quantity,
-                'date_added' => $dateAdded
-            );
-            $this->db->insert('products', $data);
-            $productIds[] = $this->db->insert_id(); // Save the product ID for future use
+                // Random product pricing and stock data
+                $price = rand(10, 1000); // Random price between 10 and 1000
+                $additional_price = rand(50, 100); // Random additional price
+                $additional_price = $additional_price > $price ? $price / 2 : $additional_price; // Ensure additional price does not exceed base price
+                $quantity = rand(100, 1000); // Random quantity between 100 and 1000
+
+                // Prepare product data and insert into the database
+                $data = array(
+                    'material' => $material,
+                    'supplier_id' => $supplierId,
+                    'price' => $price,
+                    'additional_price' => $additional_price,
+                    'quantity' => $quantity,
+                    'date_added' => $dateAdded
+                );
+                $this->db->insert('products', $data);
+                $productIds[] = $this->db->insert_id(); // Save the product ID for future use
+            }
         }
 
-        // Insert orders
-        for ($i = 0; $i < $ordersCount; $i++) {
-            $transactionId = time() . mt_rand(100000, 999999); // Generate a unique transaction ID
-            $name = $this->getName();
-            $address = $this->getAddress();
-            $mobile = $this->getNumber();
-            $productId = $productIds[array_rand($productIds)]; // Randomly assign a product
-
-            // Fetch product data for constraints
-            $product = $this->db->get_where('products', array('id' => $productId))->row();
-
-            // Ensure datePurchased is not less than product's date_added
-            $datePurchased = date('Y-m-d H:i:s', mt_rand(strtotime('2024-08-01'), time())); // Random date from August 2024 to today
-
-            // Ensure dateDelivered is after datePurchased and valid
-            $dateDelivered = rand(0, 1) ? date('Y-m-d H:i:s', rand(strtotime($datePurchased), time())) : null;
-
-            $quantity = rand(1, 10); // Random quantity between 1 and 10
-
-            // Randomly assign a payment method
-            $modes = array('Over-the-Counter', 'Cash On Delivery', 'Bank Transfer', 'GCash', 'PayMaya', 'Other');
-            $modeOfPayment = $modes[array_rand($modes)];
-
-            // Randomly assign an order status
-            $statuses = array_fill(0, 6, 'Completed');
-            $statuses = array_merge($statuses, array_fill(0, 3, 'Pending'));
-            $statuses = array_merge($statuses, array('Returned', 'Cancelled'));
-            shuffle($statuses);
-            $status = array_shift($statuses);
-
-            // Prepare order data and insert into the database
-            $data = array(
-                'transaction_id' => $transactionId,
-                'name' => $name,
-                'address' => $address,
-                'mobile' => $mobile,
-                'product_id' => $productId,
-                'quantity' => $quantity,
-                'mode_of_payment' => $modeOfPayment,
-                'status' => $status,
-                'date_purchased' => $datePurchased,
-                'date_delivered' => $status == 'Completed' ? $dateDelivered : null,
-                'date_added' => date('Y-m-d H:i:s'),
-            );
-            $this->db->insert('orders', $data); // Insert order into database
+        if($ordersCount <= 0) {
+            // Insert orders
+            for ($i = 0; $i < $ordersCount; $i++) {
+                $transactionId = time() . mt_rand(100000, 999999); // Generate a unique transaction ID
+                $name = $this->getName();
+                $address = $this->getAddress();
+                $mobile = $this->getNumber();
+                $productId = $productIds[array_rand($productIds)]; // Randomly assign a product
+    
+                // Fetch product data for constraints
+                $product = $this->db->get_where('products', array('id' => $productId))->row();
+    
+                // Ensure datePurchased is not less than product's date_added
+                $datePurchased = date('Y-m-d H:i:s', mt_rand(strtotime('2024-08-01'), time())); // Random date from August 2024 to today
+    
+                // Ensure dateDelivered is after datePurchased and valid
+                $dateDelivered = rand(0, 1) ? date('Y-m-d H:i:s', rand(strtotime($datePurchased), time())) : null;
+    
+                $quantity = rand(1, 10); // Random quantity between 1 and 10
+    
+                // Randomly assign a payment method
+                $modes = array('Over-the-Counter', 'Cash On Delivery', 'Bank Transfer', 'GCash', 'PayMaya', 'Other');
+                $modeOfPayment = $modes[array_rand($modes)];
+    
+                // Randomly assign an order status
+                $statuses = array_fill(0, 6, 'Completed');
+                $statuses = array_merge($statuses, array_fill(0, 3, 'Pending'));
+                $statuses = array_merge($statuses, array('Returned', 'Cancelled'));
+                shuffle($statuses);
+                $status = array_shift($statuses);
+    
+                // Prepare order data and insert into the database
+                $data = array(
+                    'transaction_id' => $transactionId,
+                    'name' => $name,
+                    'address' => $address,
+                    'mobile' => $mobile,
+                    'product_id' => $productId,
+                    'quantity' => $quantity,
+                    'mode_of_payment' => $modeOfPayment,
+                    'status' => $status,
+                    'date_purchased' => $datePurchased,
+                    'date_delivered' => $status == 'Completed' ? $dateDelivered : null,
+                    'date_added' => date('Y-m-d H:i:s'),
+                );
+                $this->db->insert('orders', $data); // Insert order into database
+            }
         }
     }
 }

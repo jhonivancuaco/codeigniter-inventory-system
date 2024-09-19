@@ -128,5 +128,7 @@ class Page extends CI_Controller {
 		// Populates the database with 10 suppliers, 100 products, and 1000 orders.
 		// The numbers can be changed to whatever is desired.
 		$this->populate->populateDatabase(10, 100, 1000);
+
+		redirect(base_url('dashboard'));
 	}
 }
