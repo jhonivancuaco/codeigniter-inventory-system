@@ -20,11 +20,11 @@
     <script src="<?php echo base_url('assets/resources/plugins/toastr/toastr.min.js?ver=' . time()) ?>"></script>
 
     <!-- Moment.js -->
-    <script src="<? echo base_url('assets/resources/plugins/moment/moment.min.js?ver=' . time()); ?>"></script>
+    <script src="<?php echo base_url('assets/resources/plugins/moment/moment.min.js?ver=' . time()); ?>"></script>
 
     <!-- Date Range Picker -->
-    <link rel="stylesheet" href="<? echo base_url('assets/resources/plugins/daterangepicker/daterangepicker.css?ver=' . time()); ?>">
-    <script src="<? echo base_url('assets/resources/plugins/daterangepicker/daterangepicker.js?ver=' . time()); ?>"></script>
+    <link rel="stylesheet" href="<?php echo base_url('assets/resources/plugins/daterangepicker/daterangepicker.css?ver=' . time()); ?>">
+    <script src="<?php echo base_url('assets/resources/plugins/daterangepicker/daterangepicker.js?ver=' . time()); ?>"></script>
 
     <!-- DataTables and Plugins -->
     <link rel="stylesheet" href="<?php echo base_url('assets/resources/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css?ver=' . time()) ?>">
