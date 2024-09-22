@@ -104,21 +104,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Prevent form submission on Enter key for profile form
-        document.getElementById('profile-form').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-            }
-        });
-
-        // Prevent form submission on Enter key for change password form
-        document.getElementById('change-password').addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-            }
-        });
-    });
-</script>

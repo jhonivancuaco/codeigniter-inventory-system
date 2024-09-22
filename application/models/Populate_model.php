@@ -101,6 +101,8 @@ class Populate_model extends CI_Model {
             for ($i = 0; $i < $productsCount; $i++) {
                 $material = $this->randomProductMaterial();
                 $supplierId = $supplierIds[array_rand($supplierIds)]; // Randomly assign a supplier
+
+                
     
                 // Ensure product's date_added is after the supplier's date_added
                 $dateAdded = date('Y-m-d H:i:s', mt_rand(strtotime('2024-07-01'), strtotime('2024-07-30'))); // Random date in July 2024
