@@ -172,7 +172,7 @@ class Populate_model extends CI_Model {
                     'mode_of_payment' => $modeOfPayment,
                     'status' => $status,
                     'date_purchased' => $datePurchased,
-                    'date_delivered' => $status == 'Completed' ? $dateDelivered : null,
+                    'date_delivered' => $status == 'Completed' ? ($dateDelivered ?: date('Y-m-d H:i:s')) : null,
                     'date_added' => date('Y-m-d H:i:s'),
                 );
                 $this->db->insert('orders', $data); // Insert order into database
