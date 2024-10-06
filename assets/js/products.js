@@ -77,7 +77,8 @@ $(document).ready(function () {
             'data': 'total_price',
             "render": function (data, type, row) {
                 // calculate the total price by adding the price and additional price
-                data = parseFloat(data.price + data.additional_price);
+                debugger
+                data = parseFloat(row.price + row.additional_price);
                 return '₱' + data.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
         },
