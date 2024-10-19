@@ -39,11 +39,6 @@ class Populate_model extends CI_Model {
         return "$streetNumber $streetName $streetType, $city, $state $zipCode";
     }
 
-    // Generate a random alphanumeric string of a given length
-    private function randomString($length = 10) {
-        return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
-    }
-
     // Generate a random supplier name using a combination of prefixes and suffixes
     private function randomSupplierName() {
         $prefixes = ['Global', 'United', 'Elite', 'Premium', 'Creative', 'Alpha', 'Omega', 'Royal', 'Superior', 'Dynamic'];
@@ -53,9 +48,15 @@ class Populate_model extends CI_Model {
     }
 
     // Generate a random product material name from a predefined list
-    private function randomProductMaterial() {
+    private function randomProductMaterials() {
         $materials = ['Business Cards', 'Flyers', 'Brochures', 'Posters', 'Banners', 'Stickers', 'Labels', 'Letterheads', 'Envelopes', 'Custom T-Shirts', 'Mugs with Custom Prints', 'Calendars', 'Signage', 'Notepads', 'Bookmarks', 'Greeting Cards', 'Presentation Folders', 'Roll-Up Banners', 'Invitations', 'Menus', 'Decals', 'Window Graphics', 'Vehicle Wraps', 'Vinyl Stickers', 'Canvas Prints', 'Custom Packaging', 'Photo Books', 'Wall Art', 'Certificates', 'Business Forms', 'Wedding Invitations', 'Marketing Materials', 'Graphic Design Services', 'Branding Packages', 'Logo Design', 'Custom Embroidery', 'Event Invitations', 'Trade Show Booth Graphics', 'Labels and Packaging Design', 'Catalogs', 'Annual Reports', 'Tote Bags with Prints', 'Custom Pens', '3D Printing Services', 'Heat Pressed Apparel', 'Pop-Up Display Stands', 'Vinyl Banners', 'Outdoor Signage', 'ID Cards and Badges', 'Presentation Materials'];
         return $materials[array_rand($materials)];
+    }
+
+    // Generate a random product material name from a predefined list
+    private function randomProducts() {
+        $products = ['Business Cards', 'Flyers', 'Brochures', 'Posters', 'Banners', 'Stickers', 'Labels', 'Letterheads', 'Envelopes', 'Custom T-Shirts', 'Mugs with Custom Prints', 'Calendars', 'Signage', 'Notepads', 'Bookmarks', 'Greeting Cards', 'Presentation Folders', 'Roll-Up Banners', 'Invitations', 'Menus', 'Decals', 'Window Graphics', 'Vehicle Wraps', 'Vinyl Stickers', 'Canvas Prints', 'Custom Packaging', 'Photo Books', 'Wall Art', 'Certificates', 'Business Forms', 'Wedding Invitations', 'Marketing Materials', 'Custom Pens', 'Tote Bags with Prints', 'ID Cards and Badges', 'Pop-Up Display Stands', 'Outdoor Signage', 'Catalogs', 'Annual Reports', '3D Printing Services'];
+        return $products[array_rand($products)];
     }
 
     // Generate a random mobile number in a specific format
@@ -63,9 +64,9 @@ class Populate_model extends CI_Model {
         return  '09' . substr(str_shuffle("0123456789"), 0, 9);
     }
 
-    // Main function to populate the database with random suppliers, products, and orders
-    public function populateDatabase($suppliersCount = 10, $productsCount = 100, $ordersCount = 1000) {
-    
+    // Main function to populate the database with random suppliers, materials, and transactions
+    public function populateDatabase($suppliersCount = 10, $materialsCount = 100, $productCount = 500, $transactionsCount = 1000) {
+
         // Check if suppliers table is empty
         $suppliersExists = $this->db->count_all('suppliers');
         if ($suppliersExists == 0 && $suppliersCount > 0) {
@@ -76,7 +77,7 @@ class Populate_model extends CI_Model {
                 $mobile = $this->getNumber();
                 $status = 'active';
                 $date = date('Y-m-d H:i:s', mt_rand(strtotime('2024-06-01'), strtotime('2024-06-30'))); // Random date in June 2024
-    
+
                 // Prepare supplier data and insert into the database
                 $data = array(
                     'name' => $name,
@@ -94,25 +95,25 @@ class Populate_model extends CI_Model {
             $supplierIds = array_column($suppliers, 'id');
         }
 
-        // Check if products table is empty
-        $productsExists = $this->db->count_all('products');
-        if ($productsExists == 0 && $productsCount > 0) {
+        // Check if materials table is empty
+        $materialsExists = $this->db->count_all('materials');
+        if ($materialsExists == 0 && $materialsCount > 0) {
             $productIds = [];
-            for ($i = 0; $i < $productsCount; $i++) {
-                $material = $this->randomProductMaterial();
+            for ($i = 0; $i < $materialsCount; $i++) {
+                $material = $this->randomProductMaterials();
                 $supplierId = $supplierIds[array_rand($supplierIds)]; // Randomly assign a supplier
 
-                
-    
+
+
                 // Ensure product's date_added is after the supplier's date_added
                 $dateAdded = date('Y-m-d H:i:s', mt_rand(strtotime('2024-07-01'), strtotime('2024-07-30'))); // Random date in July 2024
-    
+
                 // Random product pricing and stock data
                 $price = rand(10, 1000); // Random price between 10 and 1000
                 $additional_price = rand(50, 100); // Random additional price
                 $additional_price = $additional_price > $price ? $price / 2 : $additional_price; // Ensure additional price does not exceed base price
                 $quantity = rand(100, 1000); // Random quantity between 100 and 1000
-    
+
                 // Prepare product data and insert into the database
                 $data = array(
                     'material' => $material,
@@ -122,64 +123,90 @@ class Populate_model extends CI_Model {
                     'quantity' => $quantity,
                     'date_added' => $dateAdded
                 );
-                $this->db->insert('products', $data);
+                $this->db->insert('materials', $data);
                 $productIds[] = $this->db->insert_id(); // Save the product ID for future use
+            }
+        } else {
+            // If the table is not empty, retrieve the existing product IDs
+            $materials = $this->db->select('id')->get('materials')->result_array();
+            $productIds = array_column($materials, 'id');
+        }
+
+        // Check if transactions table is empty
+        // $productCount 
+        $productsExists = $this->db->count_all('products');
+        if ($productsExists == 0 && $productCount > 0) {
+            for ($i = 0; $i < $productCount; $i++) {
+                $productName = $this->randomProducts();
+                $productPrice = rand(10, 1000);
+                $productQuantity = rand(100, 1000);
+                $dateAdded = date('Y-m-d H:i:s', mt_rand(strtotime('2024-07-01'), strtotime('2024-07-30')));
+
+                $data = array(
+                    'name' => $productName,
+                    'price' => $productPrice,
+                    'quantity' => $productQuantity,
+                    'date_added' => $dateAdded
+                );
+                $this->db->insert('products', $data);
+                $productIds[] = $this->db->insert_id();
             }
         } else {
             // If the table is not empty, retrieve the existing product IDs
             $products = $this->db->select('id')->get('products')->result_array();
             $productIds = array_column($products, 'id');
         }
-    
-        // Check if orders table is empty
-        $ordersExists = $this->db->count_all('orders');
-        if ($ordersExists == 0 && $ordersCount > 0) {
-            for ($i = 0; $i < $ordersCount; $i++) {
+
+        // Check if transactions table is empty
+        // $transactionsCount 
+        $transactionsExists = $this->db->count_all('transactions');
+        if ($transactionsExists == 0 && $transactionsCount > 0) {
+            for ($i = 0; $i < $transactionsCount; $i++) {
                 $transactionId = time() . mt_rand(100000, 999999); // Generate a unique transaction ID
                 $name = $this->getName();
                 $address = $this->getAddress();
                 $mobile = $this->getNumber();
-                $productId = $productIds[array_rand($productIds)]; // Randomly assign a product
-    
-                // Fetch product data for constraints
-                $product = $this->db->get_where('products', array('id' => $productId))->row();
-    
+                $productID = $productIds[array_rand($productIds)];
+
                 // Ensure datePurchased is not less than product's date_added
-                $datePurchased = date('Y-m-d H:i:s', mt_rand(strtotime('2024-08-01'), time())); // Random date from August 2024 to today
-    
+                $datePurchased = date('Y-m-d H:i:s', mt_rand(strtotime('2024-08-01'), strtotime('2024-08-30'))); // Random date from August 2024 to today
+
                 // Ensure dateDelivered is after datePurchased and valid
                 $dateDelivered = rand(0, 1) ? date('Y-m-d H:i:s', rand(strtotime($datePurchased), time())) : null;
-    
+
                 $quantity = rand(1, 10); // Random quantity between 1 and 10
-    
+
                 // Randomly assign a payment method
                 $modes = array('Over-the-Counter', 'Cash On Delivery', 'Bank Transfer', 'GCash', 'PayMaya', 'Other');
                 $modeOfPayment = $modes[array_rand($modes)];
-    
+
                 // Randomly assign an order status
                 $statuses = array_fill(0, 6, 'Completed');
                 $statuses = array_merge($statuses, array_fill(0, 3, 'Pending'));
                 $statuses = array_merge($statuses, array('Returned', 'Cancelled'));
                 shuffle($statuses);
                 $status = array_shift($statuses);
-    
+
+                $query = $this->db->get_where('products', ['id' => $productID]);
+                $product = $query->row();
+
                 // Prepare order data and insert into the database
                 $data = array(
                     'transaction_id' => $transactionId,
                     'name' => $name,
                     'address' => $address,
                     'mobile' => $mobile,
-                    'product_id' => $productId,
+                    'product_id' => $productID,
+                    'product_price' => $product->price,
                     'quantity' => $quantity,
                     'mode_of_payment' => $modeOfPayment,
                     'status' => $status,
                     'date_purchased' => $datePurchased,
-                    'date_delivered' => $status == 'Completed' ? ($dateDelivered ?: date('Y-m-d H:i:s')) : null,
-                    'date_added' => date('Y-m-d H:i:s'),
+                    'date_delivered' => $status == 'Completed' ? ($dateDelivered ?: date('Y-m-d H:i:s', rand(strtotime($datePurchased), time()))) : null,
+                    'date_added' => $datePurchased,
                 );
-                $this->db->insert('orders', $data); // Insert order into database
+                $this->db->insert('transactions', $data); // Insert order into database
             }
         }
     }
-    
 }

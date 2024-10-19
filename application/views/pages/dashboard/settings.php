@@ -90,7 +90,7 @@
             <?php echo form_hidden('action', 'change-password'); ?>
 
             <div class="form-group">
-                <label for="change_password">Old Password</label>
+                <label for="change_password">Set New Password</label>
                 <div class="password-control">
                     <input type="password" name="change_password" id="change_password" class="form-control" placeholder="Old Password">
                 </div>

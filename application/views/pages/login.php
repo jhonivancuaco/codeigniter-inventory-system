@@ -1,6 +1,5 @@
 <div class="container min-vh-100 d-flex flex-column align-items-center justify-content-center">
 
-
     <div class="d-flex align-items-center mb-4">
         <img src="<?php echo LOGO ?>" width="100" class="mr-2">
         <h1 class="m-0">

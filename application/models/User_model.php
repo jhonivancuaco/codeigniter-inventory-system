@@ -133,4 +133,16 @@ class User_model extends CI_Model {
             return false; // Return false if no rows were affected (i.e., no changes were made)
         }
     }
+
+    public function is_email_exists(string $email) {
+        $this->db->where('email', $email);
+        $query = $this->db->get('users');
+        return $query->num_rows() > 0;
+    }
+
+    public function is_username_exists(string $username) {
+        $this->db->where('username', $username);
+        $query = $this->db->get('users');
+        return $query->num_rows() > 0;
+    }
 }

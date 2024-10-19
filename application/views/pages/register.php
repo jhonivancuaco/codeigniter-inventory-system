@@ -7,11 +7,18 @@
         </h1>
     </div>
 
-    <div class="card cold-md-10 col-lg-8 col-xl-6 mx-auto">
+    <div class="card col-md-10 col-lg-8 col-xl-6 mx-auto">
         <div class="card-body">
             <h2 class="text-center">REGISTER</h2>
 
-            <?php echo form_open(base_url('register')); ?>
+            <?php if ($this->session->flashdata('register_error')): ?>
+                <div class="alert alert-danger text-center">
+                    <?php echo $this->session->flashdata('register_error'); ?>
+                </div>
+            <?php endif; ?>
+
+
+            <?php echo form_open(); ?>
 
             <div class="row">
                 <div class="col-md-6">

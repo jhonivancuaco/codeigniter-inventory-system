@@ -38,21 +38,21 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="<?php echo base_url('dashboard/supplier') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Supplier' ? 'active' : '' ?>">
+                            <a href="<?php echo base_url('dashboard/suppliers') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Supplier' ? 'active' : '' ?>">
                                 <i class="nav-icon fas fa-user-friends"></i>
                                 <p>Supplier</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('dashboard/products') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Products' ? 'active' : '' ?>">
+                            <a href="<?php echo base_url('dashboard/materials') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Materials' ? 'active' : '' ?>">
                                 <i class="nav-icon fas fa-boxes"></i>
-                                <p>Products</p>
+                                <p>Materials</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="<?php echo base_url('dashboard/orders') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Orders' ? 'active' : '' ?>">
+                            <a href="<?php echo base_url('dashboard/products') ?>" class="nav-link <?php echo isset($title) && $title == 'Manage Sales - Transactions' ? 'active' : '' ?>">
                                 <i class="nav-icon fas fa-receipt"></i>
-                                <p>Orders</p>
+                                <p>Products</p>
                             </a>
                         </li>
                     </ul>

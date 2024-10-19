@@ -1,7 +1,5 @@
 <?php
 
-use function PHPSTORM_META\type;
-
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class DatabaseHook {
@@ -50,7 +48,6 @@ class DatabaseHook {
         $conn->close();
     }
 
-
     /**
      * Generates the tables in the database based on the defined schema.
      * If the table already exists, it will just add the missing fields.
@@ -66,7 +63,7 @@ class DatabaseHook {
         // The following tables are created in the database
         // - users: contains user information
         // - supplier: contains supplier information
-        // - products: contains product information
+        // - materials: contains product information
         // - orders: contains order information
         $tables = array(
             'users' => array(
@@ -165,7 +162,7 @@ class DatabaseHook {
                 ),
 
             ),
-            'products' => array(
+            'materials' => array(
                 'id' => array(
                     'type' => 'INT',
                     'constraint' => 11,
@@ -213,12 +210,59 @@ class DatabaseHook {
                 ),
 
             ),
-            'orders' => array(
+            'products' => array(
                 'id' => array(
                     'type' => 'INT',
                     'constraint' => 11,
                     'auto_increment' => true,
                     'unsigned' => true,
+                ),
+                'name' => array(
+                    'type' => 'VARCHAR',
+                    'constraint' => 255,
+                    'null' => false,
+                ),
+                'price' => array(
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'null' => false,
+                ),
+                'quantity' => array(
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'null' => false,
+                ),
+                'status' => array(
+                    'type' => 'ENUM',
+                    'constraint' => array('active', 'inactive'),
+                    'null' => false,
+                ),
+                'date_added' => array(
+                    'type' => 'DATETIME',
+                    'null' => false,
+                ),
+                'date_modified' => array(
+                    'type' => 'TIMESTAMP',
+                    'on_update' => 'CURRENT_TIMESTAMP',
+                    'null' => false,
+                ),
+            ),
+            'transactions' => array(
+                'id' => array(
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'auto_increment' => true,
+                    'unsigned' => true,
+                ),
+                'product_id' => array(
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'null' => false,
+                ),
+                'product_price'=> array(
+                    'type' => 'INT',
+                    'constraint' => 11,
+                    'null' => false,
                 ),
                 'transaction_id' => array(
                     'type' => 'VARCHAR',
@@ -238,11 +282,6 @@ class DatabaseHook {
                 'mobile' => array(
                     'type' => 'VARCHAR',
                     'constraint' => 255,
-                    'null' => false,
-                ),
-                'product_id' => array(
-                    'type' => 'INT',
-                    'constraint' => 11,
                     'null' => false,
                 ),
                 'quantity' => array(
@@ -300,43 +339,8 @@ class DatabaseHook {
             }
         }
 
-
-
         $CI->load->model('populate_model', 'populate');
         // Comment out the following line if you don't want to populate new dummy data into the database
         $CI->populate->populateDatabase();
-    }
-
-    /**
-     * Logs the last database query in the log file.
-     *
-     * Logs the query, the controller and method that executed the query,
-     * and the time the query was executed. The log message is in the
-     * following format:
-     *
-     * Query: <query> | Controller: <controller> | Method: <method> | Time: <time>
-     */
-    public function log_database_actions() {
-        // Load the customize log library
-        $CI = &get_instance();
-        $CI->load->library('Customize_Log', 'customize_log');
-
-        // Get the last executed query
-        $last_query = str_replace('\n', ' ', json_encode($CI->db->last_query()));
-
-        // Get the current controller and method
-        $controller = $CI->router->fetch_class();
-        $method = $CI->router->fetch_method();
-
-        // Log the details
-        $log_message = sprintf(
-            "Query: %s | Controller: %s | Method: %s | Time: %s",
-            $last_query,
-            $controller,
-            $method,
-            date('Y-m-d h:i A')
-        );
-
-        $CI->customize_log->custom_log($log_message, 'DB');
     }
 }

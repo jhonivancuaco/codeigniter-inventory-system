@@ -1,12 +1,5 @@
-<IfModule mod_rewrite.c>
-    # Turn on URL rewriting
-    RewriteEngine On
-
-    # Don't rewrite existing files or directories
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-
-    # Rewrite all other queries to index.php
-    RewriteRule ^(.*)$ index.php?/$1 [L,QSA]
-</IfModule>
-
+RewriteEngine on
+RewriteCond $1 !^(index\.php|resources|robots\.txt)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?/ [L,QSA] 

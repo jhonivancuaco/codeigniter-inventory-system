@@ -13,8 +13,12 @@
     <script src="<?php echo base_url('assets/resources/plugins/jquery/jquery.js?ver=' . time()) ?>"></script>
 
     <!-- Chart.js -->
-    <script src="<?php echo base_url('assets/resources/plugins/chart.js/Chart.min.js?ver=' . time()) ?>"></script>
-
+    <script src="<?php echo base_url('assets/resources/plugins/chart.js/Chart.bundle.js?ver=' . time()) ?>"></script>
+    
+    <script src="<?php echo base_url('assets/resources/plugins/flot/jquery.flot.js?ver=' . time()) ?>"></script>
+    <script src="<?php echo base_url('assets/resources/plugins/flot/plugins/jquery.flot.resize.js?ver=' . time()) ?>"></script>
+    <script src="<?php echo base_url('assets/resources/plugins/flot/plugins/jquery.flot.pie.js?ver=' . time()) ?>"></script>
+    
     <!-- Toastr -->
     <link rel="stylesheet" href="<?php echo base_url('assets/resources/plugins/toastr/toastr.min.css?ver=' . time()) ?>">
     <script src="<?php echo base_url('assets/resources/plugins/toastr/toastr.min.js?ver=' . time()) ?>"></script>

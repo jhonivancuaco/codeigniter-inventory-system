@@ -3,7 +3,6 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Auth_model extends CI_Model {
 
-    // Constructor: Loads the 'user_model' to interact with the user-specific functions
     public function __construct() {
         parent::__construct();
         $this->load->model('user_model', 'user');

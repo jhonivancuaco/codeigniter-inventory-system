@@ -7,12 +7,12 @@ class Dashboard extends CI_Controller {
     public function __construct() {
         parent::__construct();
 
-        // Load the required models for encryption, authentication, suppliers, products, orders, and computations
+        // Load the required models for encryption, authentication, suppliers, materials, orders, and computations
         $this->load->model('encryption_model', 'encryption');
         $this->load->model('auth_model', 'auth');
         $this->load->model('supplier_model', 'supplier');
+        $this->load->model('materials_model', 'materials');
         $this->load->model('products_model', 'products');
-        $this->load->model('orders_model', 'orders');
         $this->load->model('computation_model', 'computation');
 
         // Ensure the user is logged in; if not, redirect to the base URL
@@ -24,20 +24,24 @@ class Dashboard extends CI_Controller {
     // Dashboard overview page (Inventory) - Displays overview of sales and inventory
     public function index() {
         // Fetch an overview of sales and inventory data
-        $overview = $this->computation->overview();
-        $data['reports'] = $overview;
+        $reports = $this->computation->get_reports();
+        $data['reports'] = $reports;
         $data['title'] = 'Inventory';
 
         // Load the inventory page with the provided data
         template('dashboard', 'dashboard/inventory', $data);
     }
 
-    // Sales activity page - Displays detailed sales reports
+    // Sales activity page - Displays detailed stats of sales
     public function sales_activity() {
-        // Fetch detailed sales reports
-        $reports = $this->computation->get_reports();
+        // Fetch detailed stats of sales
+        $reports = $this->computation->get_statistics();
         $data['reports'] = $reports;
 
+        // echo '<pre>';
+        // print_r($data);
+        // echo '</pre>';
+        // die();
         $data['title'] = 'Sales Activity';
 
         // Load the sales activity page with the provided data
@@ -115,7 +119,7 @@ class Dashboard extends CI_Controller {
     }
 
     // Supplier management page - Handles adding, updating, and deleting suppliers
-    public function supplier() {
+    public function suppliers() {
         $supplier_action = $this->input->post('supplier_action');
         $supplier_id = $this->input->post('supplier_id');
 
@@ -151,7 +155,7 @@ class Dashboard extends CI_Controller {
                         $this->session->set_flashdata('supplier_failed', 'Failed to add new supplier');
                     }
                 }
-                redirect(base_url('dashboard/supplier'));
+                redirect(base_url('dashboard/suppliers'));
             }
         }
 
@@ -168,7 +172,7 @@ class Dashboard extends CI_Controller {
                     $this->session->set_flashdata('supplier_failed', 'Failed to delete supplier or supplier not found');
                 }
 
-                redirect(base_url('dashboard/supplier'));
+                redirect(base_url('dashboard/suppliers'));
             }
         }
 
@@ -176,27 +180,20 @@ class Dashboard extends CI_Controller {
         $data['js'] = array(base_url('assets/js/supplier.js'));
 
         // Load the supplier management page
-        template('dashboard', 'dashboard/supplier', $data);
+        template('dashboard', 'dashboard/suppliers', $data);
     }
 
-    // Product management page - Handles adding, updating, and deleting products
-    public function products() {
-        $suppliers = $this->supplier->get_suppliers();
+    // Product management page - Handles adding, updating, and deleting materials
+    public function materials() {
 
-        // If no suppliers are found, redirect to the supplier management page
-        if (!$suppliers) {
-            redirect(base_url('dashboard/supplier'));
-        }
+        $material_action = $this->input->post('material_action');
+        $material_id = $this->input->post('material_id');
 
-        $product_action = $this->input->post('product_action');
-        $product_id = $this->input->post('product_id');
-
-        // If the action is to add or update a product
-        if ($product_action === 'add_update') {
+        // If the action is to add or update a material
+        if ($material_action === 'add_update_material') {
             $this->form_validation->set_rules('material', 'Material', 'trim|required');
             $this->form_validation->set_rules('supplier_id', 'Supplier', 'trim|required|numeric|greater_than[0]');
             $this->form_validation->set_rules('price', 'Price', 'trim|required|numeric|greater_than[0]');
-            $this->form_validation->set_rules('additional_price', 'Additional Price', 'trim|required|numeric|greater_than[0]');
             $this->form_validation->set_rules('quantity', 'Quantity', 'trim|required|numeric|greater_than[0]');
 
             if ($this->form_validation->run() === true) {
@@ -204,8 +201,63 @@ class Dashboard extends CI_Controller {
                     'material' => $this->input->post('material'),
                     'supplier_id' => $this->input->post('supplier_id'),
                     'price' => $this->input->post('price'),
-                    'additional_price' => $this->input->post('additional_price'),
                     'quantity' => $this->input->post('quantity'),
+                );
+
+                // Update existing product or add a new one
+                if ($material_id) {
+                    $result = $this->materials->update_product($material_id, $product_data);
+
+                    if ($result) {
+                        $this->session->set_flashdata('material_success', 'Product updated successfully');
+                    } else {
+                        $this->session->set_flashdata('material_failed', 'Failed to update product or no changes made');
+                    }
+                } else {
+                    $product_data['date_added'] = date('Y-m-d H:i:s');
+                    $result = $this->materials->add_product($product_data);
+
+                    if ($result) {
+                        $this->session->set_flashdata('material_success', 'Product added successfully');
+                    } else {
+                        $this->session->set_flashdata('material_failed', 'Failed to add new product');
+                    }
+                }
+
+                redirect(base_url('dashboard/materials'));
+            }
+        }
+
+        // If the action is to delete a material
+        if ($material_id === 'delete_material') {
+            $this->form_validation->set_rules('material_id', 'Product ID', 'trim|required');
+
+            if ($this->form_validation->run() === true) {
+                $result = $this->materials->delete_product($material_id);
+
+                if ($result) {
+                    $this->session->set_flashdata('material_success', 'Product deleted successfully');
+                } else {
+                    $this->session->set_flashdata('material_failed', 'Failed to delete product or product not found');
+                }
+            }
+
+            redirect(base_url('dashboard/materials'));
+        }
+
+        $product_action = $this->input->post('product_action');
+        $product_id = $this->input->post('product_id');
+
+        if ($product_action === 'add_update_product') {
+            $this->form_validation->set_rules('product_name', 'Name', 'trim|required');
+            $this->form_validation->set_rules('product_price', 'Price', 'trim|required|numeric|greater_than[0]');
+            $this->form_validation->set_rules('product_quantity', 'Quantity', 'trim|required|numeric|greater_than[0]');
+
+            if ($this->form_validation->run() === true) {
+                $product_data = array(
+                    'name' => $this->input->post('product_name'),
+                    'price' => $this->input->post('product_price'),
+                    'quantity' => $this->input->post('product_quantity'),
                 );
 
                 // Update existing product or add a new one
@@ -228,12 +280,11 @@ class Dashboard extends CI_Controller {
                     }
                 }
 
-                redirect(base_url('dashboard/products'));
+                redirect(base_url('dashboard/materials'));
             }
         }
 
-        // If the action is to delete a product
-        if ($product_action === 'delete') {
+        if ($product_action === 'delete_product') {
             $this->form_validation->set_rules('product_id', 'Product ID', 'trim|required');
 
             if ($this->form_validation->run() === true) {
@@ -245,28 +296,25 @@ class Dashboard extends CI_Controller {
                     $this->session->set_flashdata('product_failed', 'Failed to delete product or product not found');
                 }
 
+                redirect(base_url('dashboard/products'));
             }
-
-            redirect(base_url('dashboard/products'));
         }
 
+        $suppliers = $this->supplier->get_suppliers();
         $data['suppliers'] = $suppliers;
-        $data['title'] = 'Manage Sales - Products';
-        $data['js'] = array(base_url('assets/js/products.js'));
+
+        $products = $this->products->get_products();
+        $data['products'] = $products;
+
+        $data['title'] = 'Manage Sales - Materials';
+        $data['js'] = array(base_url('assets/js/materials.js'));
 
         // Load the product management page
-        template('dashboard', 'dashboard/products', $data);
+        template('dashboard', 'dashboard/materials', $data);
     }
 
     // Order management page - Handles adding and updating orders
-    public function orders() {
-        $products = $this->products->get_products();
-
-        // If no products are found, redirect to the product management page
-        if (!$products) {
-            redirect(base_url('dashboard/products'));
-        }
-
+    public function products() {
         $order_id = $this->input->post('order_id');
 
         // Validate the form inputs for adding or updating orders
@@ -298,9 +346,22 @@ class Dashboard extends CI_Controller {
                 'date_delivered' => $this->input->post('date_delivered') ? date('Y-m-d H:i:s', strtotime($this->input->post('date_delivered'))) : null,
             );
 
-            // Update existing order or add a new one
+            $product_id = $this->input->post('product_id');
+
+            $query = $this->db->get_where('transactions', ['id' => $order_id], 1);
+            $order = $query->row();
+
+            $query = $this->db->get_where('products', ['id' => $product_id], 1);
+            $product = $query->row();
+
+            // Update existing transaction or add a new one
             if ($order_id) {
-                $result =  $this->orders->update_order($order_id, $order_data);
+
+                // return product quantity then deduct new order quantity
+                $this->db->update('products', ['quantity' => ($product->quantity + $order->quantity) - $order_data['quantity']], ['id' => $product_id]);
+
+                // update transaction
+                $result =  $this->products->update_order($order_id, $order_data);
 
                 if ($result) {
                     $this->session->set_flashdata('order_success', 'Order updated successfully');
@@ -308,9 +369,10 @@ class Dashboard extends CI_Controller {
                     $this->session->set_flashdata('order_failed', 'Failed to update order');
                 }
             } else {
-                $order_data['date_added'] = date('Y-m-d H:i:s');
-                $result = $this->orders->add_order($order_data);
+                $this->db->update('products', ['quantity' => $product->quantity - $order_data['quantity']], ['id' => $product_id]);
 
+                $order_data['date_added'] = date('Y-m-d H:i:s');
+                $result = $this->products->add_order($order_data);
                 if ($result) {
                     $this->session->set_flashdata('order_success', 'Order added successfully');
                 } else {
@@ -318,14 +380,15 @@ class Dashboard extends CI_Controller {
                 }
             }
 
-            redirect(base_url('dashboard/orders'));
+            redirect(base_url('dashboard/products'));
         }
 
+        $products = $this->products->get_products();
         $data['products'] = $products;
-        $data['title'] = 'Manage Sales - Orders';
-        $data['js'] = array(base_url('assets/js/orders.js'));
+        $data['title'] = 'Manage Sales - Transactions';
+        $data['js'] = array(base_url('assets/js/transactions.js'));
 
         // Load the order management page
-        template('dashboard', 'dashboard/orders', $data);
+        template('dashboard', 'dashboard/products', $data);
     }
 }

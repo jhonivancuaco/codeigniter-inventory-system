@@ -25,10 +25,3 @@ $hook['post_controller_constructor'][] = array(
     'filename' => 'DatabaseHook.php',
     'filepath' => 'hooks'
 );
-
-$hook['post_controller'][] = array(
-    'class'    => 'DatabaseHook',
-    'function' => 'log_database_actions',
-    'filename' => 'DatabaseHook.php',
-    'filepath' => 'hooks'
-);
